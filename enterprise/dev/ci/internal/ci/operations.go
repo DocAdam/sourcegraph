@@ -525,6 +525,7 @@ func buildCandidateDockerImage(app, version, tag string) operations.Operation {
 			bk.Env("DOCKER_BUILDKIT", "1"),
 			bk.Env("IMAGE", localImage),
 			bk.Env("VERSION", version),
+			bk.Agent("queue", "dave"),
 		}
 
 		if _, err := os.Stat(filepath.Join("docker-images", app)); err == nil {
