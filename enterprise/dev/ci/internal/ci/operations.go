@@ -487,7 +487,7 @@ func testUpgrade(candidateTag, minimumUpgradeableVersion string) operations.Oper
 func clusterQA(candidateTag string) operations.Operation {
 	return func(p *bk.Pipeline) {
 		p.AddStep(":docker::arrow_double_up: Sourcegraph Cluster QA",
-			bk.DependsOn(candidateImageStepKey("server")),
+			bk.DependsOn(candidateImageStepKey("frontend")),
 			bk.Env("CANDIDATE_VERSION", candidateTag),
 			bk.Env("DOCKER_CLUSTER_IMAGES_TXT", strings.Join(images.DeploySourcegraphDockerImages, "\n")),
 
