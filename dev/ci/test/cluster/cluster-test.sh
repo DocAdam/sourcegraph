@@ -57,13 +57,15 @@ function cluster_setup() {
     grep -lr '.' -e "index.docker.io/sourcegraph/$line" --include \*.yaml | xargs sed -i -E "s#index.docker.io/sourcegraph/$line:.*#us.gcr.io/sourcegraph-dev/$line:$CANDIDATE_VERSION#g"
   done < <(printf '%s\n' "$DOCKER_CLUSTER_IMAGES_TXT")
   popd
+
   echo "--- create cluster"
-  ./create-new-cluster.sh
+  ./overlay-generate-cluster.sh low-resource generated-cluster 
+  kubectl apply -n "$NAMESPACE" --recursive --validate -f generated-cluster
   popd
 
   echo "--- wait for ready"
-  kubectl get pods
-  time kubectl wait --for=condition=Ready -l app=sourcegraph-frontend pod --timeout=20m
+  kubectl get pods -n "$NAMESPACE"
+  time kubectl wait --for=condition=Ready -l app=sourcegraph-frontend pod --timeout=20m -n "$NAMESPACE"
   set -e
   set -o pipefail
 }

@@ -486,7 +486,7 @@ func testUpgrade(candidateTag, minimumUpgradeableVersion string) operations.Oper
 // Flaky deployment. See https://github.com/sourcegraph/sourcegraph/issues/25977
 func clusterQA(candidateTag string) operations.Operation {
 	return func(p *bk.Pipeline) {
-		p.AddStep(":docker::arrow_double_up: Sourcegraph Upgrade",
+		p.AddStep(":docker::arrow_double_up: Sourcegraph Cluster QA",
 			bk.Agent("queue", "baremetal"),
 			bk.Env("CANDIDATE_VERSION", candidateTag),
 			bk.Env("DOCKER_CLUSTER_IMAGES_TXT", strings.Join(images.DeploySourcegraphDockerImages, "\n")),
