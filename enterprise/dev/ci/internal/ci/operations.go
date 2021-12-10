@@ -70,6 +70,17 @@ func CoreTestOperations(changedFiles changed.Files, opts CoreTestOperationsOptio
 		}
 	}
 
+	// TEMPORARY
+	if runAll || changedFiles.AffectsDatabaseSchema() || true {
+		// If there are schema changes, ensure the tests of the last minor release continue
+		// to succeed when the new version of the schema is applied. This ensures that the
+		// schema can be rolled forward pre-upgrade without negatively affecting the running
+		// instance (which was working fine prior to the upgrade).
+		ops.Append(
+			addGoTestsBackcompat,
+		)
+	}
+
 	if runAll || changedFiles.AffectsGraphQL() {
 		ops.Append(addGraphQLLint)
 	}
@@ -261,30 +272,43 @@ func addBrandedTests(pipeline *bk.Pipeline) {
 		bk.Cmd("dev/ci/codecov.sh -c -F typescript -F unit"))
 }
 
+// This is a bandage solution to speed up the go tests by running the slowest ones
+// concurrently. As a results, the PR time affecting only Go code is divided by two.
+var slowGoTestPackages = []string{
+	"github.com/sourcegraph/sourcegraph/enterprise/internal/codeintel/stores/dbstore",   // 224s
+	"github.com/sourcegraph/sourcegraph/enterprise/internal/codeintel/stores/lsifstore", // 122s
+	"github.com/sourcegraph/sourcegraph/enterprise/internal/insights",                   // 82+162s
+	"github.com/sourcegraph/sourcegraph/internal/database",                              // 253s
+	"github.com/sourcegraph/sourcegraph/internal/repos",                                 // 106s
+	"github.com/sourcegraph/sourcegraph/enterprise/internal/batches",                    // 52 + 60
+	"github.com/sourcegraph/sourcegraph/cmd/frontend",                                   // 100s
+}
+
 // Adds the Go test step.
 func addGoTests(pipeline *bk.Pipeline) {
-	// This is a bandage solution to speed up the go tests by running the slowest ones
-	// concurrently. As a results, the PR time affecting only Go code is divided by two.
-	slowPackages := []string{
-		"github.com/sourcegraph/sourcegraph/enterprise/internal/codeintel/stores/dbstore",   // 224s
-		"github.com/sourcegraph/sourcegraph/enterprise/internal/codeintel/stores/lsifstore", // 122s
-		"github.com/sourcegraph/sourcegraph/enterprise/internal/insights",                   // 82+162s
-		"github.com/sourcegraph/sourcegraph/internal/database",                              // 253s
-		"github.com/sourcegraph/sourcegraph/internal/repos",                                 // 106s
-		"github.com/sourcegraph/sourcegraph/enterprise/internal/batches",                    // 52 + 60
-		"github.com/sourcegraph/sourcegraph/cmd/frontend",                                   // 100s
-	}
-
 	pipeline.AddStep(":go: Test",
-		bk.Cmd("./dev/ci/go-test.sh exclude "+strings.Join(slowPackages, " ")),
+		bk.Cmd("./dev/ci/go-test.sh exclude "+strings.Join(slowGoTestPackages, " ")),
 		bk.Cmd("dev/ci/codecov.sh -c -F go"))
 
-	for _, slowPkg := range slowPackages {
+	for _, slowPkg := range slowGoTestPackages {
 		// Trim the package name for readability
 		name := strings.ReplaceAll(slowPkg, "github.com/sourcegraph/sourcegraph/", "")
 		pipeline.AddStep(":go: Test ("+name+")",
 			bk.Cmd("./dev/ci/go-test.sh only "+slowPkg),
 			bk.Cmd("dev/ci/codecov.sh -c -F go"))
+	}
+}
+
+// Adds the Go backcompat test step.
+func addGoTestsBackcompat(pipeline *bk.Pipeline) {
+	pipeline.AddStep(":go: Test backcompat",
+		bk.Cmd("./dev/ci/go-test-backcompat.sh exclude "+strings.Join(slowGoTestPackages, " ")))
+
+	for _, slowPkg := range slowGoTestPackages {
+		// Trim the package name for readability
+		name := strings.ReplaceAll(slowPkg, "github.com/sourcegraph/sourcegraph/", "")
+		pipeline.AddStep(":go: Test backcompat ("+name+")",
+			bk.Cmd("./dev/ci/go-test-backcompat.sh only "+slowPkg))
 	}
 }
 

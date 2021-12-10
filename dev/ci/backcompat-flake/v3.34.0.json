@@ -1,0 +1,64 @@
+[
+  {
+    "path": "cmd/gitserver/server/cleanup_test.go",
+    "tests": ["TestRemoveRepoDirectory"]
+  },
+  {
+    "path": "cmd/gitserver/server/server_test.go",
+    "tests": ["TestCloneRepo", "TestHandleRepoUpdate", "TestSyncRepoState"]
+  },
+  {
+    "path": "enterprise/internal/batches/background/batch_spec_workspace_creator_test.go",
+    "tests": ["TestBatchSpecWorkspaceCreatorProcess"]
+  },
+  {
+    "path": "enterprise/internal/batches/background/batch_spec_workspace_execution_worker_test.go",
+    "tests": ["TestBatchSpecWorkspaceExecutionWorkerStore"]
+  },
+  {
+    "path": "enterprise/internal/batches/store/batch_spec_execution_cache_entry_test.go",
+    "tests": ["TestStore_CleanBatchSpecExecutionCacheEntries"]
+  },
+  {
+    "path": "enterprise/internal/batches/store/integration_test.go",
+    "tests": ["TestIntegration"]
+  },
+  {
+    "path": "enterprise/internal/insights/resolvers/insight_series_resolver_test.go",
+    "tests": ["TestResolver_InsightSeries"]
+  },
+  {
+    "path": "enterprise/internal/insights/resolvers/resolver_test.go",
+    "tests": ["TestResolver_Insights"]
+  },
+  {
+    "path": "enterprise/internal/insights/store/dashboard_store_test.go",
+    "tests": ["TestCreateDashboard", "TestDeleteDashboard", "TestGetDashboard", "TestUpdateDashboard"]
+  },
+  {
+    "path": "internal/database/gitserver_repos_test.go",
+    "tests": [
+      "TestGitserverReposGetByID",
+      "TestGitserverRepoUpsert",
+      "TestIterateRepoGitserverStatus",
+      "TestSetCloneStatus",
+      "TestSetLastError"
+    ]
+  },
+  {
+    "path": "internal/database/repos_db_test.go",
+    "tests": ["TestRepos"]
+  },
+  {
+    "path": "internal/database/repos_perm_test.go",
+    "tests": ["TestRepoStore"]
+  },
+  {
+    "path": "internal/database/repos_test.go",
+    "tests": ["TestRepoStore"]
+  },
+  {
+    "path": "internal/repos/status_messages_test.go",
+    "tests": ["TestStatusMessages"]
+  }
+]
