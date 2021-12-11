@@ -1,0 +1,38 @@
+.panel {
+    position: fixed;
+
+    background-color: var(--color-bg-1);
+}
+
+.bottom {
+    border-top: 2px solid var(--border-color-2);
+    min-height: 10rem;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    overflow-x: auto;
+}
+
+.side {
+    border-left: 2px solid var(--border-color-2);
+    min-width: 10rem;
+    height: 100%;
+    top: 0;
+    right: 0;
+    overflow-y: auto;
+}
+
+.dismiss-button {
+    position: absolute;
+    color: var(--icon-color);
+    margin: 0.5rem;
+    z-index: 1100;
+
+    &-right {
+        right: 0;
+    }
+
+    &-left {
+        left: 0;
+    }
+}
