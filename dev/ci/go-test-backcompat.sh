@@ -6,13 +6,9 @@
 cd "$(dirname "${BASH_SOURCE[0]}")/../../"
 set -ex
 
-# TODO - may be can relax this now that we have the checks below
-# for test in $(jq '.[].tests[]' <./dev/ci/go-test-backcompat-flake.json); do
-#   if grep -q "_" <<<"${test}"; then
-#     echo "Cannot mark subtest '${test}' as flake. Explicitly mark the entire test '$(echo "${test}" | cut -d'_' -f1)' as flake instead."
-#     exit 1
-#   fi
-# done
+#
+# TODO - this script is VERY noisy
+#
 
 function latest_minor_release() {
   for tag in $(git tag | grep -P 'v3.(\d+).0$' | cut -d'.' -f2 | sort -nr | xargs -I _ echo "v3._.0"); do
@@ -49,6 +45,7 @@ echo "Sourcegraph instances deployed at the previous release."
 
 git checkout "${commit}"
 git checkout "${current}" -- ./migrations
+git checkout "${current}" -- ./dev/ci/go-test.sh # test
 git checkout "${current}" -- ./dev/ci/backcompat-flake/
 ./.buildkite/hooks/pre-command
 
