@@ -60,5 +60,14 @@
   {
     "path": "internal/repos/status_messages_test.go",
     "tests": ["TestStatusMessages"]
-  }
+  },
+  {
+    "path": "enterprise/internal/insights/resolvers/insight_connection_resolver_test.go",
+    "tests": ["TestResolver_InsightConnection", "TestResolver_InsightsRepoPermissions"]
+  },
+  {
+    "path": "enterprise/internal/insights/store/dashboard_store_test.go",
+    "tests": ["TestAssociateViewsById", "TestRemoveViewsFromDashboard"]
+  },
+  { "path": "enterprise/internal/insights/store/insight_store_test.go", "tests": ["TestGet", "TestCreateSeries"] }
 ]
