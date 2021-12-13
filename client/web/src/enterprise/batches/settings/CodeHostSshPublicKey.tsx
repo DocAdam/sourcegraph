@@ -1,9 +1,11 @@
-import copy from 'copy-to-clipboard'
-import { noop } from 'lodash'
-import ContentCopyIcon from 'mdi-react/ContentCopyIcon'
-import React, { useCallback, useState } from 'react'
+import copy from 'copy-to-clipboard';
+import { noop } from 'lodash';
+import ContentCopyIcon from 'mdi-react/ContentCopyIcon';
+import React, { useCallback, useState } from 'react';
 
-import { ExternalServiceKind } from '../../../graphql-operations'
+import { TextArea } from '@sourcegraph/wildcard';
+
+import { ExternalServiceKind } from '../../../graphql-operations';
 
 const configInstructionLinks: Record<ExternalServiceKind, string> = {
     [ExternalServiceKind.GITHUB]:
@@ -52,7 +54,7 @@ export const CodeHostSshPublicKey: React.FunctionComponent<CodeHostSshPublicKeyP
                     </button>
                 )}
             </div>
-            <textarea
+            <TextArea
                 id={LABEL_ID}
                 className="form-control text-monospace mb-3"
                 rows={5}

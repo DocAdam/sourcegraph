@@ -2,27 +2,31 @@
 // documentation of all the Bootstrap classes we have available in our app, please see refer to the Bootstrap
 // documentation for that. Its primary purpose is to show what Bootstrap's componenents look like with our styling
 // customizations.
-import { Menu, MenuButton, MenuList, MenuLink } from '@reach/menu-button'
-import { action } from '@storybook/addon-actions'
-import { number } from '@storybook/addon-knobs'
-import { DecoratorFn, Meta, Story } from '@storybook/react'
-import classNames from 'classnames'
-import React, { useState } from 'react'
-import 'storybook-addon-designs'
+import 'storybook-addon-designs';
 
-import { registerHighlightContributions } from '@sourcegraph/shared/src/highlight/contributions'
-import { highlightCodeSafe } from '@sourcegraph/shared/src/util/markdown'
+import { Menu, MenuButton, MenuLink, MenuList } from '@reach/menu-button';
 
-import { BrandedStory } from '../../components/BrandedStory'
-import { CodeSnippet } from '../../components/CodeSnippet'
-import { Form } from '../../components/Form'
+import { registerHighlightContributions } from '@sourcegraph/shared/src/highlight/contributions';
+import { highlightCodeSafe } from '@sourcegraph/shared/src/util/markdown';
+import { TextArea } from '@sourcegraph/wildcard';
 
-import { AlertsStory } from './AlertsStory'
-import { CardsStory } from './CardsStory'
-import { ColorVariants } from './ColorVariants'
-import { FormFieldVariants } from './FormFieldVariants'
-import { TextStory } from './TextStory'
-import { preventDefault } from './utils'
+import { action } from '@storybook/addon-actions';
+import { number } from '@storybook/addon-knobs';
+import { DecoratorFn, Meta, Story } from '@storybook/react';
+
+import classNames from 'classnames';
+import React, { useState } from 'react';
+
+import { BrandedStory } from '../../components/BrandedStory';
+import { CodeSnippet } from '../../components/CodeSnippet';
+import { Form } from '../../components/Form';
+
+import { AlertsStory } from './AlertsStory';
+import { CardsStory } from './CardsStory';
+import { ColorVariants } from './ColorVariants';
+import { FormFieldVariants } from './FormFieldVariants';
+import { TextStory } from './TextStory';
+import { preventDefault } from './utils';
 
 registerHighlightContributions()
 
@@ -484,7 +488,7 @@ export const Forms: Story = () => (
             </div>
             <div className="form-group">
                 <label htmlFor="example-textarea">Example textarea</label>
-                <textarea className="form-control" id="example-textarea" rows={3} />
+                <TextArea className="form-control" id="example-textarea" rows={3} />
             </div>
             <div className="form-group form-check">
                 <input type="checkbox" className="form-check-input" id="exampleCheck1" />
@@ -538,7 +542,7 @@ export const Forms: Story = () => (
             <fieldset>
                 <div className="form-group">
                     <input className="form-control form-control-sm mb-1" type="text" placeholder="Small input" />
-                    <textarea className="form-control form-control-sm mb-1" placeholder="Small textarea" />
+                    <TextArea className="form-control form-control-sm mb-1" placeholder="Small textarea" />
                     <select className="custom-select custom-select-sm mb-1">
                         <option>Small select</option>
                     </select>
