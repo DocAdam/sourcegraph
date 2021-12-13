@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 	"golang.org/x/sync/errgroup"
@@ -253,6 +254,9 @@ func startProcesses(group *errgroup.Group, name string, procfile []string, rpcPo
 }
 
 func runMigrator() {
+	// TODO - only do this if we control it
+	log.Println("Waiting for Postgres to startup...")
+	time.Sleep(time.Second * 15)
 	log.Println("Starting migrator")
 
 	var output bytes.Buffer
