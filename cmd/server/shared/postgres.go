@@ -27,14 +27,6 @@ func maybePostgresProcFile() (string, error) {
 		return "", nil
 	}
 
-	// If we get here, _some_ service will use in the in-container postgres
-	// instance. Ensure that everything is in place and generate a line for
-	// the procfile to start it.
-	procfile, err := postgresProcfile()
-	if err != nil {
-		return "", err
-	}
-
 	// Each un-configured service will point to the database instance that
 	// we configured above.
 	for prefix, database := range databases {
@@ -45,13 +37,10 @@ func maybePostgresProcFile() (string, error) {
 			SetDefaultEnv(prefix+"PGUSER", "postgres")
 			SetDefaultEnv(prefix+"PGDATABASE", database)
 			SetDefaultEnv(prefix+"PGSSLMODE", "disable")
-
-			// Skip check that ensures frontend and codeintel dbs hit distinct databases.
-			SetDefaultEnv("CODEINTEL_PG_ALLOW_SINGLE_DB", "true")
 		}
 	}
 
-	return procfile, nil
+	return postgresProcfile()
 }
 
 func postgresProcfile() (string, error) {
