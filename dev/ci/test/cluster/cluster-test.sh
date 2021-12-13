@@ -47,9 +47,9 @@ function cluster_setup() {
   pushd "$DIR/deploy-sourcegraph/"
   set +e
   set +o pipefail
-
   # See $DOCKER_CLUSTER_IMAGES_TXT in pipeline-steps.go for env var
   # replace all docker image tags with previously built candidate images
+  pushd base
   while IFS= read -r line; do
     echo "$line"
     grep -lr '.' -e "index.docker.io/sourcegraph/$line" --include \*.yaml | xargs sed -i -E "s#index.docker.io/sourcegraph/$line:.*#us.gcr.io/sourcegraph-dev/$line:$CANDIDATE_VERSION#g"
@@ -59,7 +59,6 @@ function cluster_setup() {
   echo "--- create cluster"
   ./overlay-generate-cluster.sh low-resource generated-cluster
   kubectl apply -n "$NAMESPACE" --recursive --validate -f generated-cluster
-  popd
 
   echo "--- wait for ready"
   kubectl get pods -n "$NAMESPACE"
