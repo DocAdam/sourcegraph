@@ -3,7 +3,23 @@
     align-items: center;
     flex-wrap: wrap;
 
-    margin: 0 -0.25rem;
+    margin: -0.05rem -0.25rem;
+}
+
+.input {
+    :global(.form-check) {
+        margin-bottom: 0.37rem;
+        margin-top: 0.2rem;
+        padding-left: 0.3rem !important;
+        :global(.form-check-input) {
+            margin-top: 0.48rem;
+            margin-left: 0;
+        }
+        :global(.form-check-label) {
+            padding: 0.14rem 0.12rem 0.14rem 0.8rem;
+            margin-left: 0.25rem;
+        }
+    }
 }
 
 .label {
@@ -11,7 +27,11 @@
     user-select: none;
     cursor: pointer;
 
-    padding: 0.25rem 0.5rem;
+    padding: 0.14rem 0.5rem;
+}
+
+.small {
+    padding: 0.25rem 0.35rem;
 }
 
 .item {

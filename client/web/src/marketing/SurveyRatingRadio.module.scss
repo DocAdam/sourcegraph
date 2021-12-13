@@ -2,6 +2,29 @@
     display: inline-block;
 }
 
+.fieldset {
+    :global(.form-check) {
+        padding-left: 0;
+        :global(.form-check-input) {
+            margin-top: 0;
+            margin-left: 0;
+        }
+    }
+}
+
+.rating-inline-btn {
+    display: inline-block !important;
+    margin: 0 0.125rem;
+}
+
+.rating-inline-btn:first-of-type {
+    margin-left: 0;
+}
+
+.rating-inline-btn:last-of-type {
+    margin-right: 0;
+}
+
 .rating-radio {
     position: absolute;
     clip: rect(0, 0, 0, 0);

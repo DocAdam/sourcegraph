@@ -45,7 +45,7 @@
     }
 
     // Checked state
-    &__native-radio-control:checked + &__radio-control {
+    &__native-radio-control:checked + label span &__radio-control {
         &::before {
             opacity: 1;
             border: solid 2px currentColor;
@@ -61,10 +61,24 @@
     }
 
     &__color-block {
-        margin-right: 0.75rem;
+        margin-right: 0;
     }
 
     &__custom-color {
         color: var(--link-color);
+    }
+
+    &__fieldset {
+        :global(.form-check) {
+            padding-left: 0;
+            padding-right: 0.75rem;
+            :global(.form-check-input) {
+                margin-left: 0;
+                margin-top: 0;
+            }
+            :global(.form-check-label) {
+                margin-bottom: 0.5rem;
+            }
+        }
     }
 }
