@@ -180,27 +180,27 @@ func GeneratePipeline(c Config) (*bk.Pipeline, error) {
 		})
 
 	default:
-		// Slow async pipeline
-		ops.Append(triggerAsync(buildOptions))
+		// // Slow async pipeline
+		// ops.Append(triggerAsync(buildOptions))
 
 		// Slow image builds
 		for _, dockerImage := range images.SourcegraphDockerImages {
 			ops.Append(buildCandidateDockerImage(dockerImage, c.Version, c.candidateImageTag()))
 		}
 
-		// Trivy security scans
-		for _, dockerImage := range images.SourcegraphDockerImages {
-			// ops.Append(trivyScanCandidateImage(dockerImage, c.candidateImageTag()))
-		}
+		// // Trivy security scans
+		// for _, dockerImage := range images.SourcegraphDockerImages {
+		// 	ops.Append(trivyScanCandidateImage(dockerImage, c.candidateImageTag()))
+		// }
 
-		// Executor VM image
-		skipHashCompare := c.MessageFlags.SkipHashCompare || c.RunType.Is(ReleaseBranch)
-		if c.RunType.Is(MainDryRun, MainBranch, ReleaseBranch) {
-			ops.Append(buildExecutor(c.Version, skipHashCompare))
-			if c.RunType.Is(ReleaseBranch) || c.ChangedFiles.AffectsExecutorDockerRegistryMirror() {
-				ops.Append(buildExecutorDockerMirror(c.Version))
-			}
-		}
+		// // Executor VM image
+		// skipHashCompare := c.MessageFlags.SkipHashCompare || c.RunType.Is(ReleaseBranch)
+		// if c.RunType.Is(MainDryRun, MainBranch, ReleaseBranch) {
+		// 	ops.Append(buildExecutor(c.Version, skipHashCompare))
+		// 	if c.RunType.Is(ReleaseBranch) || c.ChangedFiles.AffectsExecutorDockerRegistryMirror() {
+		// 		ops.Append(buildExecutorDockerMirror(c.Version))
+		// 	}
+		// }
 
 		// // Core tests
 		// ops.Merge(CoreTestOperations(nil, CoreTestOperationsOptions{
@@ -208,7 +208,7 @@ func GeneratePipeline(c Config) (*bk.Pipeline, error) {
 		// }))
 
 		// Test upgrades from mininum upgradeable Sourcegraph version - updated by release tool
-		const minimumUpgradeableVersion = "3.34.2"
+		// const minimumUpgradeableVersion = "3.34.2"
 
 		// Various integration tests
 		ops.Append(
@@ -217,28 +217,29 @@ func GeneratePipeline(c Config) (*bk.Pipeline, error) {
 			// serverE2E(c.candidateImageTag()),
 			// serverQA(c.candidateImageTag()),
 			// testUpgrade(c.candidateImageTag(), minimumUpgradeableVersion))
+		)
 
-		// All operations before this point are required
-		ops.Append(wait)
+		// // All operations before this point are required
+		// ops.Append(wait)
 
-		// Add final artifacts
-		for _, dockerImage := range images.SourcegraphDockerImages {
-			ops.Append(publishFinalDockerImage(c, dockerImage))
-		}
-		// Executor VM image
-		if c.RunType.Is(MainBranch, ReleaseBranch) {
-			ops.Append(publishExecutor(c.Version, skipHashCompare))
-			if c.RunType.Is(ReleaseBranch) || c.ChangedFiles.AffectsExecutorDockerRegistryMirror() {
-				ops.Append(publishExecutorDockerMirror(c.Version))
-			}
-		}
+		// // Add final artifacts
+		// for _, dockerImage := range images.SourcegraphDockerImages {
+		// 	ops.Append(publishFinalDockerImage(c, dockerImage))
+		// }
+		// // Executor VM image
+		// if c.RunType.Is(MainBranch, ReleaseBranch) {
+		// 	ops.Append(publishExecutor(c.Version, skipHashCompare))
+		// 	if c.RunType.Is(ReleaseBranch) || c.ChangedFiles.AffectsExecutorDockerRegistryMirror() {
+		// 		ops.Append(publishExecutorDockerMirror(c.Version))
+		// 	}
+		// }
 
-		// Propagate changes elsewhere
-		if c.RunType.Is(MainBranch) {
-			ops.Append(
-				wait, // wait for all steps to pass
-				triggerUpdaterPipeline)
-		}
+		// // Propagate changes elsewhere
+		// if c.RunType.Is(MainBranch) {
+		// 	ops.Append(
+		// 		wait, // wait for all steps to pass
+		// 		triggerUpdaterPipeline)
+		// }
 	}
 
 	// Construct pipeline
