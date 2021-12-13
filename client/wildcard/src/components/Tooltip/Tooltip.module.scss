@@ -1,0 +1,171 @@
+:root {
+    --tooltip-opacity: 1;
+    --tooltip-font-size: 0.75rem;
+    --tooltip-zindex: 1070;
+    --tooltip-arrow-width: 0.8rem;
+    --tooltip-arrow-height: 0.4rem;
+    --tooltip-arrow-color: var(--tooltip-bg);
+    --tooltip-max-width: 200px;
+    --tooltip-color: var(--white);
+    --tooltip-border-radius: var(--border-radius);
+    --tooltip-padding-y: 0.25rem;
+    --tooltip-padding-x: 0.5rem;
+    --tooltip-margin: 0;
+}
+
+// Base class
+.tooltip {
+    position: absolute;
+    z-index: var(--tooltip-zindex);
+    display: block;
+    margin: var(--tooltip-margin);
+    font-size: var(--tooltip-font-size);
+
+    // Our parent element can be arbitrary since tooltips are by default inserted as a sibling of their target element.
+    // So reset our font and text properties to avoid inheriting weird values.
+    // rules from reset-text() mixin
+    font-style: normal;
+    font-weight: normal;
+    text-align: left; // Fallback for where `start` is not supported
+    text-align: start;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    letter-spacing: normal;
+    word-break: normal;
+    word-spacing: normal;
+    line-break: auto;
+
+    // Allow breaking very long words so they don't overflow the tooltip's bounds
+    word-wrap: break-word;
+    opacity: 0;
+
+    // Allows line breaks in tooltips
+    white-space: pre-wrap;
+    animation: 0.25s fade-in;
+    pointer-events: none;
+    line-height: 1rem;
+
+    &.show {
+        opacity: var(--tooltip-opacity);
+    }
+
+    .arrow {
+        position: absolute;
+        display: block;
+        width: var(--tooltip-arrow-width);
+        height: var(--tooltip-arrow-height);
+
+        &::before {
+            position: absolute;
+            content: '';
+            border-color: transparent;
+            border-style: solid;
+            height: 0.8rem;
+        }
+    }
+}
+
+// tooltip-(top/right/bottom/left) need to have !important property after them
+// because bs-tooltip-(top/right/bottom/left) are being added by bootstrap
+// automatically after our own classes.
+.tooltip-top {
+    padding: var(--tooltip-arrow-height) 0 !important;
+
+    .arrow {
+        bottom: 0 !important;
+
+        &::before {
+            top: 0 !important;
+            border-width: var(--tooltip-arrow-height) (var(--tooltip-arrow-width) / 2) 0 !important;
+            border-top-color: var(--tooltip-arrow-color) !important;
+        }
+    }
+}
+
+.tooltip-right {
+    padding: 0 var(--tooltip-arrow-height) !important;
+
+    .arrow {
+        left: 0;
+        width: var(--tooltip-arrow-height) !important;
+        height: var(--tooltip-arrow-width) !important;
+
+        &::before {
+            right: 0;
+            border-width: (var(--tooltip-arrow-width) / 2) var(--tooltip-arrow-height) (var(--tooltip-arrow-width) / 2)
+                0 !important;
+            border-right-color: var(--tooltip-arrow-color) !important;
+        }
+    }
+}
+
+.tooltip-bottom {
+    padding: var(--tooltip-arrow-height) 0 !important;
+
+    .arrow {
+        top: 0 !important;
+
+        &::before {
+            bottom: 0 !important;
+            border-width: 0 (var(--tooltip-arrow-width) / 2) var(--tooltip-arrow-height) !important;
+            border-bottom-color: var(--tooltip-arrow-color) !important;
+        }
+    }
+}
+
+.tooltip-left {
+    padding: 0 var(--tooltip-arrow-height) !important;
+
+    .arrow {
+        right: 0;
+        width: var(--tooltip-arrow-height) !important;
+        height: var(--tooltip-arrow-width) !important;
+
+        &::before {
+            left: 0 !important;
+            border-width: (var(--tooltip-arrow-width) / 2) 0 (var(--tooltip-arrow-width) / 2)
+                var(--tooltip-arrow-height) !important;
+            border-left-color: var(--tooltip-arrow-color) !important;
+        }
+    }
+}
+
+.tooltip-auto {
+    &[x-placement^='top'] {
+        @extend .tooltip-top;
+    }
+    &[x-placement^='right'] {
+        @extend .tooltip-right;
+    }
+    &[x-placement^='bottom'] {
+        @extend .tooltip-bottom;
+    }
+    &[x-placement^='left'] {
+        @extend .tooltip-left;
+    }
+}
+
+// Wrapper for the tooltip content
+.tooltip-inner {
+    max-width: var(--tooltip-max-width);
+    padding: var(--tooltip-padding-y) var(--tooltip-padding-x);
+    color: var(--tooltip-color);
+    text-align: center;
+    background-color: var(--tooltip-bg);
+    border-radius: var(--tooltip-border-radius);
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
