@@ -179,16 +179,6 @@ func Main() {
 
 	procfile = append(procfile, maybeZoektProcFile()...)
 
-	// Shutdown if any process dies
-	procDiedAction := goreman.Shutdown
-	if ignore, _ := strconv.ParseBool(os.Getenv("IGNORE_PROCESS_DEATH")); ignore {
-		// IGNORE_PROCESS_DEATH is an escape hatch so that sourcegraph/server
-		// keeps running in the case of a subprocess dying on startup. An
-		// example use case is connecting to postgres even though frontend is
-		// dying due to a bad migration.
-		procDiedAction = goreman.Ignore
-	}
-
 	var (
 		postgresProcfile []string
 		restore, _       = strconv.ParseBool(os.Getenv("PGRESTORE"))
@@ -210,37 +200,56 @@ func Main() {
 		log.Fatal("PGRESTORE is set but a local Postgres instance is not configured")
 	}
 
-	group, _ := errgroup.WithContext(context.Background())
-
-	if len(postgresProcfile) > 0 {
-		log.Println("Starting Postgres processes")
-
-		group.Go(func() error {
-			return goreman.Start([]byte(strings.Join(postgresProcfile, "\n")), goreman.Options{
-				RPCAddr:        "127.0.0.1:5004",
-				ProcDiedAction: procDiedAction,
-			})
-		})
+	// Shutdown if any process dies
+	procDiedAction := goreman.Shutdown
+	if ignore, _ := strconv.ParseBool(os.Getenv("IGNORE_PROCESS_DEATH")); ignore {
+		// IGNORE_PROCESS_DEATH is an escape hatch so that sourcegraph/server
+		// keeps running in the case of a subprocess dying on startup. An
+		// example use case is connecting to postgres even though frontend is
+		// dying due to a bad migration.
+		procDiedAction = goreman.Ignore
 	}
 
-	if !restore {
+	runMigrations := !restore
+	run(procfile, postgresProcfile, runMigrations, procDiedAction)
+}
+
+func run(procfile, postgresProcfile []string, runMigrations bool, procDiedAction goreman.ProcDiedAction) {
+	if !runMigrations {
+		procfile = append(procfile, postgresProcfile...)
+		postgresProcfile = nil
+	}
+
+	group, _ := errgroup.WithContext(context.Background())
+
+	startProcesses(group, "postgres", postgresProcfile, 5004, procDiedAction)
+
+	if runMigrations {
 		runMigrator()
 	}
 
-	{
-		log.Println("Starting all processes")
-
-		group.Go(func() error {
-			return goreman.Start([]byte(strings.Join(procfile, "\n")), goreman.Options{
-				RPCAddr:        "127.0.0.1:5005",
-				ProcDiedAction: procDiedAction,
-			})
-		})
-	}
+	startProcesses(group, "all", procfile, 5005, procDiedAction)
 
 	if err := group.Wait(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func startProcesses(group *errgroup.Group, name string, procfile []string, rpcPort int, procDiedAction goreman.ProcDiedAction) {
+	if len(procfile) == 0 {
+		return
+	}
+
+	log.Printf("Starting %s processes\n", name)
+
+	addr := fmt.Sprintf("127.0.0.1:%d", rpcPort)
+
+	group.Go(func() error {
+		return goreman.Start([]byte(strings.Join(procfile, "\n")), goreman.Options{
+			RPCAddr:        addr,
+			ProcDiedAction: procDiedAction,
+		})
+	})
 }
 
 func runMigrator() {
