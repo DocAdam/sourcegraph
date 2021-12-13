@@ -157,7 +157,7 @@ func postgresProcfile() (string, error) {
 
 	e.Command("migrator")
 	if err := e.Error(); err != nil {
-		pgPrintf("Migrating postgres schemas failed::\n%s", err)
+		pgPrintf("Migrating postgres schemas failed:\n%s", output.String())
 		return "", err
 	}
 	pgPrintf("Migrated postgres schemas.")
