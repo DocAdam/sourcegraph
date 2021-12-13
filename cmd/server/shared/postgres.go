@@ -45,6 +45,9 @@ func maybePostgresProcFile() (string, error) {
 			SetDefaultEnv(prefix+"PGUSER", "postgres")
 			SetDefaultEnv(prefix+"PGDATABASE", database)
 			SetDefaultEnv(prefix+"PGSSLMODE", "disable")
+
+			// Skip check that ensures frontend and codeintel dbs hit distinct databases.
+			SetDefaultEnv("CODEINTEL_PG_ALLOW_SINGLE_DB", "true")
 		}
 	}
 
