@@ -4,6 +4,8 @@
 package shared
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -14,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/joho/godotenv"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/sourcegraph/sourcegraph/internal/database/postgresdsn"
 	"github.com/sourcegraph/sourcegraph/internal/goreman"
@@ -174,14 +177,6 @@ func Main() {
 		procfile = append(procfile, redisCacheLine)
 	}
 
-	postgresLine, err := maybePostgresProcFile()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if postgresLine != "" {
-		procfile = append(procfile, postgresLine)
-	}
-
 	procfile = append(procfile, maybeZoektProcFile()...)
 
 	// Shutdown if any process dies
@@ -194,17 +189,71 @@ func Main() {
 		procDiedAction = goreman.Ignore
 	}
 
-	// If in restore mode, only run PostgreSQL
-	if restore, _ := strconv.ParseBool(os.Getenv("PGRESTORE")); restore {
-		procfile = []string{}
-		procfile = append(procfile, postgresLine)
-	}
+	var (
+		postgresProcfile []string
+		restore, _       = strconv.ParseBool(os.Getenv("PGRESTORE"))
+	)
 
-	err = goreman.Start([]byte(strings.Join(procfile, "\n")), goreman.Options{
-		RPCAddr:        "127.0.0.1:5005",
-		ProcDiedAction: procDiedAction,
-	})
+	postgresLine, err := maybePostgresProcFile()
 	if err != nil {
 		log.Fatal(err)
 	}
+	if postgresLine != "" {
+		if restore {
+			// If in restore mode, only run PostgreSQL
+			procfile = []string{}
+			procfile = append(procfile, postgresLine)
+		} else {
+			postgresProcfile = append(postgresProcfile, postgresLine)
+		}
+	} else if restore {
+		log.Fatal("PGRESTORE is set but a local Postgres instance is not configured")
+	}
+
+	group, _ := errgroup.WithContext(context.Background())
+
+	if len(postgresProcfile) > 0 {
+		log.Println("Starting Postgres processes")
+
+		group.Go(func() error {
+			return goreman.Start([]byte(strings.Join(postgresProcfile, "\n")), goreman.Options{
+				RPCAddr:        "127.0.0.1:5004",
+				ProcDiedAction: procDiedAction,
+			})
+		})
+	}
+
+	if !restore {
+		runMigrator()
+	}
+
+	{
+		log.Println("Starting all processes")
+
+		group.Go(func() error {
+			return goreman.Start([]byte(strings.Join(procfile, "\n")), goreman.Options{
+				RPCAddr:        "127.0.0.1:5005",
+				ProcDiedAction: procDiedAction,
+			})
+		})
+	}
+
+	if err := group.Wait(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func runMigrator() {
+	log.Println("Starting migrator")
+
+	var output bytes.Buffer
+	e := execer{Out: &output}
+	e.Command("migrator")
+
+	if err := e.Error(); err != nil {
+		pgPrintf("Migrating postgres schemas failed:\n%s", output.String())
+		log.Fatal(err.Error())
+	}
+
+	log.Println("Migrated postgres schemas.")
 }

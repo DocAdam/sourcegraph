@@ -27,6 +27,14 @@ func maybePostgresProcFile() (string, error) {
 		return "", nil
 	}
 
+	// If we get here, _some_ service will use in the in-container postgres
+	// instance. Ensure that everything is in place and generate a line for
+	// the procfile to start it.
+	procfile, err := postgresProcfile()
+	if err != nil {
+		return "", err
+	}
+
 	// Each un-configured service will point to the database instance that
 	// we configured above.
 	for prefix, database := range databases {
@@ -40,7 +48,7 @@ func maybePostgresProcFile() (string, error) {
 		}
 	}
 
-	return postgresProcfile()
+	return procfile, nil
 }
 
 func postgresProcfile() (string, error) {
@@ -146,13 +154,6 @@ func postgresProcfile() (string, error) {
 		}
 	}
 	pgPrintf("Finished initializing the internal database.")
-
-	e.Command("migrator")
-	if err := e.Error(); err != nil {
-		pgPrintf("Migrating postgres schemas failed:\n%s", output.String())
-		return "", err
-	}
-	pgPrintf("Migrated postgres schemas.")
 
 	ignoredLogs := []string{
 		"database system was shut down",
