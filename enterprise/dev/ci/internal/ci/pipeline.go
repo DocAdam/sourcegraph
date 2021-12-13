@@ -190,7 +190,7 @@ func GeneratePipeline(c Config) (*bk.Pipeline, error) {
 
 		// Trivy security scans
 		for _, dockerImage := range images.SourcegraphDockerImages {
-			ops.Append(trivyScanCandidateImage(dockerImage, c.candidateImageTag()))
+			// ops.Append(trivyScanCandidateImage(dockerImage, c.candidateImageTag()))
 		}
 
 		// Executor VM image
@@ -202,21 +202,21 @@ func GeneratePipeline(c Config) (*bk.Pipeline, error) {
 			}
 		}
 
-		// Core tests
-		ops.Merge(CoreTestOperations(nil, CoreTestOperationsOptions{
-			ChromaticShouldAutoAccept: c.RunType.Is(MainBranch),
-		}))
+		// // Core tests
+		// ops.Merge(CoreTestOperations(nil, CoreTestOperationsOptions{
+		// 	ChromaticShouldAutoAccept: c.RunType.Is(MainBranch),
+		// }))
 
 		// Test upgrades from mininum upgradeable Sourcegraph version - updated by release tool
 		const minimumUpgradeableVersion = "3.34.2"
 
 		// Various integration tests
 		ops.Append(
-			backendIntegrationTests(c.candidateImageTag()),
+			// backendIntegrationTests(c.candidateImageTag()),
 			codeIntelQA(c.candidateImageTag()),
-			serverE2E(c.candidateImageTag()),
-			serverQA(c.candidateImageTag()),
-			testUpgrade(c.candidateImageTag(), minimumUpgradeableVersion))
+			// serverE2E(c.candidateImageTag()),
+			// serverQA(c.candidateImageTag()),
+			// testUpgrade(c.candidateImageTag(), minimumUpgradeableVersion))
 
 		// All operations before this point are required
 		ops.Append(wait)
