@@ -1,0 +1,38 @@
+:root {
+    --card-bg: var(--color-bg-1);
+    --card-border-color: var(--gray-04);
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0; // See https://github.com/twbs/bootstrap/pull/22740#issuecomment-305868106
+    word-wrap: break-word;
+    background-color: var(--card-bg);
+    background-clip: border-box;
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--card-border-color);
+    border-radius: var(--border-radius);
+
+    > hr {
+        margin-right: 0;
+        margin-left: 0;
+    }
+}
+
+.card-interactive {
+    cursor: pointer;
+    &:hover:not(:global(.focus)):not(:focus):not(:active) {
+        // TODO: Improve implementation,to avoid visual card size transitions
+        border-width: 2px;
+        border-color: var(--blue);
+    }
+
+    &:focus,
+    &:active {
+        box-shadow: 0 0 0 2px var(--primary-2);
+        border-color: var(--white);
+    }
+}

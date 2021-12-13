@@ -1,0 +1,12 @@
+.list-group {
+    display: flex;
+    flex-direction: column;
+
+    > div {
+        margin-bottom: 0.25rem;
+    }
+
+    > div:last-child {
+        margin-bottom: 0;
+    }
+}
