@@ -47,9 +47,7 @@ function cluster_setup() {
   pushd "$DIR/deploy-sourcegraph/"
   set +e
   set +o pipefail
-  pushd base
-  # Remove cAdvisor, it deploys on all Buildkite nodes as a daemonset and is non-critical.
-  rm -rf ./cadvisor
+
   # See $DOCKER_CLUSTER_IMAGES_TXT in pipeline-steps.go for env var
   # replace all docker image tags with previously built candidate images
   while IFS= read -r line; do
@@ -59,7 +57,7 @@ function cluster_setup() {
   popd
 
   echo "--- create cluster"
-  ./overlay-generate-cluster.sh low-resource generated-cluster 
+  ./overlay-generate-cluster.sh low-resource generated-cluster
   kubectl apply -n "$NAMESPACE" --recursive --validate -f generated-cluster
   popd
 
