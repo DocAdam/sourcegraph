@@ -14,7 +14,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/joho/godotenv"
 	"golang.org/x/sync/errgroup"
@@ -254,18 +253,18 @@ func startProcesses(group *errgroup.Group, name string, procfile []string, rpcPo
 }
 
 func runMigrator() {
-	// TODO - only do this if we control it
-	log.Println("Waiting for Postgres to startup...")
-	time.Sleep(time.Second * 15)
 	log.Println("Starting migrator")
 
 	var output bytes.Buffer
 	e := execer{Out: &output}
-	e.Command("migrator")
 
-	if err := e.Error(); err != nil {
-		pgPrintf("Migrating postgres schemas failed:\n%s", output.String())
-		log.Fatal(err.Error())
+	for _, schemaName := range []string{"frontend", "codeintel"} {
+		e.Command("migrator", "up", "-db", schemaName)
+
+		if err := e.Error(); err != nil {
+			pgPrintf("Migrating %s schema failed:\n%s", schemaName, output.String())
+			log.Fatal(err.Error())
+		}
 	}
 
 	log.Println("Migrated postgres schemas.")
