@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Alert Renders variant 'Danger' correctly 1`] = `
+<div
+  class="alert alertDanger"
+>
+  <h4>
+    Too many matching repositories
+  </h4>
+  Use a 'repo:' or 'repogroup:' filter to narrow your search.
+</div>
+`;
+
+exports[`Alert Renders variant 'Info' correctly 1`] = `
+<div
+  class="alert alertInfo"
+>
+  <h4>
+    Too many matching repositories
+  </h4>
+  Use a 'repo:' or 'repogroup:' filter to narrow your search.
+</div>
+`;
+
+exports[`Alert Renders variant 'Merged' correctly 1`] = `
+<div
+  class="alert alertMerged"
+>
+  <h4>
+    Too many matching repositories
+  </h4>
+  Use a 'repo:' or 'repogroup:' filter to narrow your search.
+</div>
+`;
+
+exports[`Alert Renders variant 'Primary' correctly 1`] = `
+<div
+  class="alert alertPrimary"
+>
+  <h4>
+    Too many matching repositories
+  </h4>
+  Use a 'repo:' or 'repogroup:' filter to narrow your search.
+</div>
+`;
+
+exports[`Alert Renders variant 'Secondary' correctly 1`] = `
+<div
+  class="alert alertSecondary"
+>
+  <h4>
+    Too many matching repositories
+  </h4>
+  Use a 'repo:' or 'repogroup:' filter to narrow your search.
+</div>
+`;
+
+exports[`Alert Renders variant 'Success' correctly 1`] = `
+<div
+  class="alert alertSuccess"
+>
+  <h4>
+    Too many matching repositories
+  </h4>
+  Use a 'repo:' or 'repogroup:' filter to narrow your search.
+</div>
+`;
+
+exports[`Alert Renders variant 'Warning' correctly 1`] = `
+<div
+  class="alert alertWarning"
+>
+  <h4>
+    Too many matching repositories
+  </h4>
+  Use a 'repo:' or 'repogroup:' filter to narrow your search.
+</div>
+`;
